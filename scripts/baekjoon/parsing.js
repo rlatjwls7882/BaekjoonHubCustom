@@ -46,16 +46,14 @@ async function makeDetailMessageAndReadme(data) {
     code, language, memory, runtime } = data;
   const score = parseNumberFromString(result);
   // 내가 변경한 주소
-  const myFileName = (Number('${problemId}')/1000).toString()+"xxx";
-  if(myFileName.length()!=5) myFileName = '0'+myFileName;
+  let myFileName = (Math.floor(data.problemId/1000)).toString()+'xxx';
+  if(myFileName.length!=5) myFileName = '0'+myFileName;
   // 내가 변경한 주소
   const directory = await getDirNameByOrgOption(
     `백준/${myFileName}/${problemId}. ${convertSingleCharToDoubleChar(title)}`,
     langVersionRemove(language, null)
   );
-  const message = `[${level}]`
-    + ((isNaN(score)) ? ' ' : `, Score: ${score} point `) // 서브 태스크가 있는 문제로, 점수가 있는 경우 점수까지 커밋 메시지에 표기
-    + `-BaekjoonHub`;
+  const message = `[${level}]`; // 커밋 메세지 수정
   const category = problem_tags.join(', ');
   const fileName = `${convertSingleCharToDoubleChar(title)}.${languages[language]}`;
   const dateInfo = submissionTime ?? getDateString(new Date(Date.now()));
