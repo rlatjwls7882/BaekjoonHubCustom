@@ -53,7 +53,7 @@ async function makeDetailMessageAndReadme(data) {
     `백준/${myFileName}/${problemId}. ${convertSingleCharToDoubleChar(title)}`,
     langVersionRemove(language, null)
   );
-  const message = `[${level}]`; // 커밋 메세지 수정
+  const message = `${level}`; // 커밋 메세지 수정
   const category = problem_tags.join(', ');
   const fileName = `${convertSingleCharToDoubleChar(title)}.${languages[language]}`;
   const dateInfo = submissionTime ?? getDateString(new Date(Date.now()));
