@@ -50,7 +50,7 @@ async function makeDetailMessageAndReadme(data) {
   if(myFileName.length!=5) myFileName = '0'+myFileName;
   // 내가 변경한 주소
   const directory = await getDirNameByOrgOption(
-    `백준/${myFileName}/${problemId}. ${convertSingleCharToDoubleChar(title)}`,
+    `${myFileName}/${problemId}. ${convertSingleCharToDoubleChar(title)}`,
     langVersionRemove(language, null)
   );
   const message = `${level}`; // 커밋 메세지 수정
