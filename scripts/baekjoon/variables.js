@@ -14,7 +14,7 @@
     "아희": "aheui",
     "엄준식": "umm",
     "Ada": "ada",
-    "Algol 68": "a",
+    "Algol 68": "a68",
     "APECODE": "ape",
     "Assembly": "o",
     "Assembly (32bit)": "o",
