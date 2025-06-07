@@ -5,7 +5,6 @@
 
 /*
   bojData를 초기화하는 함수로 문제 요약과 코드를 파싱합니다.
-
   - 문제 설명: problemDescription
   - Github repo에 저장될 디렉토리: directory
   - 커밋 메시지: message 
@@ -45,10 +44,9 @@ async function makeDetailMessageAndReadme(data) {
     problem_description, problem_input, problem_output, submissionTime,
     code, language, memory, runtime } = data;
   const score = parseNumberFromString(result);
-  // 내가 변경한 주소
+  
   let myFileName = (Math.floor(data.problemId/1000)).toString()+'xxx';
   if(myFileName.length!=5) myFileName = '0'+myFileName;
-  // 내가 변경한 주소
   const directory = await getDirNameByOrgOption(
     `${myFileName}/${problemId}. ${convertSingleCharToDoubleChar(title)}`,
     langVersionRemove(language, null)
@@ -61,9 +59,9 @@ async function makeDetailMessageAndReadme(data) {
   const readme = `# [${level}] ${title}\n\n`
     + `[문제 링크](https://www.acmicpc.net/problem/${problemId}) \n\n`
     + (!!problem_description ? ''
-      + `### 문제 설명\n\n${problem_description}\n\n`
-      + `### 입력 \n\n ${problem_input}\n\n`
-      + `### 출력 \n\n ${problem_output}\n\n` : '');
+      + `## 문제 설명\n\n${problem_description}\n\n`
+      + `## 입력 \n\n ${problem_input}\n\n`
+      + `## 출력 \n\n ${problem_output}\n\n` : '');
   // prettier-ignore-end
   return {
     directory,
@@ -167,7 +165,6 @@ function findFromResultTable() {
 
 /*
   Fetch를 사용하여 정보를 구하는 함수로 다음 정보를 확인합니다.
-
     - 문제 설명: problem_description
     - 문제 입력값: problem_input
     - 문제 출력값: problem_output
@@ -179,9 +176,8 @@ function findFromResultTable() {
     - 백준 문제 카테고리: category
 */
 function parseProblemDescription(doc = document) {
-  convertImageTagAbsoluteURL(doc.getElementById('problem_description')); //이미지에 상대 경로가 있을 수 있으므로 이미지 경로를 절대 경로로 전환 합니다.
   const problemId = doc.getElementsByTagName('title')[0].textContent.split(':')[0].replace(/[^0-9]/, '');
-  const problem_description = unescapeHtml(doc.getElementById('problem_description').innerHTML.trim());
+  const problem_description = unescapeHtml(extractPlainTextWithMathJax(doc));
   const problem_input = doc.getElementById('problem_input')?.innerHTML.trim?.().unescapeHtml?.() || 'Empty'; // eslint-disable-line
   const problem_output = doc.getElementById('problem_output')?.innerHTML.trim?.().unescapeHtml?.() || 'Empty'; // eslint-disable-line
   if (problemId && problem_description) {
@@ -190,6 +186,31 @@ function parseProblemDescription(doc = document) {
     return { problemId, problem_description, problem_input, problem_output};
   }
   return {};
+}
+
+/**
+ * MathJax에서 LaTex 수식 뽑아내기
+ * 이미지 src 절대 경로로 변환
+ */
+function extractPlainTextWithMathJax(doc) {
+  const clone = doc.cloneNode(true);
+
+  // mjx-copytext만 남기고 나머지 MathJax 관련 요소 제거
+  clone.querySelectorAll('mjx-container').forEach(container => {
+    const latex = container.textContent?.trim() || '';
+    const replaced = document.createTextNode(`$${latex}$`);
+    container.replaceWith(replaced);
+  });
+
+  // 이미지 src 절대 경로로 변환
+  const imgs = clone.querySelectorAll('#problem_description img');
+  imgs.forEach(img => {
+    const src = img.getAttribute('src');
+    if (src && src.startsWith('/')) {
+      img.setAttribute('src', `https://www.acmicpc.net${src}`);
+    }
+  });
+  return clone.getElementById('problem_description')?.innerHTML.trim() ?? '';
 }
 
 async function fetchProblemDescriptionById(problemId) {
