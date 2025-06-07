@@ -68,16 +68,16 @@ async function beginUpload(bojData) {
       await versionUpdate();
     }
 
-    /* 현재 제출하려는 소스코드가 기존 업로드한 내용과 같다면 중지 */
-    cachedSHA = await getStatsSHAfromPath(`${hook}/${bojData.directory}/${bojData.fileName}`)
-    calcSHA = calculateBlobSHA(bojData.code)
-    log('cachedSHA', cachedSHA, 'calcSHA', calcSHA)
+    // /* 현재 제출하려는 소스코드가 기존 업로드한 내용과 같다면 중지 */
+    // cachedSHA = await getStatsSHAfromPath(`${hook}/${bojData.directory}/${bojData.fileName}`)
+    // calcSHA = calculateBlobSHA(bojData.code)
+    // log('cachedSHA', cachedSHA, 'calcSHA', calcSHA)
 
-    if (cachedSHA == calcSHA) {
-      markUploadedCSS(stats.branches, bojData.directory);
-      console.log(`현재 제출번호를 업로드한 기록이 있습니다.` /* submissionID ${bojData.submissionId}` */);
-      return;
-    }
+    // if (cachedSHA == calcSHA) {
+    //   markUploadedCSS(stats.branches, bojData.directory);
+    //   console.log(`현재 제출번호를 업로드한 기록이 있습니다.` /* submissionID ${bojData.submissionId}` */);
+    //   return;
+    // }
     /* 신규 제출 번호라면 새롭게 커밋  */
     await uploadOneSolveProblemOnGit(bojData, markUploadedCSS);
   }

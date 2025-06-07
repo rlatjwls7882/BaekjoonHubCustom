@@ -195,13 +195,17 @@ function parseProblemDescription(doc = document) {
 function extractPlainTextWithMathJax(doc) {
   const clone = doc.cloneNode(true);
 
-  // mjx-copytext만 남기고 나머지 MathJax 관련 요소 제거
+  // mjx-container 내 수식 텍스트로 치환
   clone.querySelectorAll('mjx-container').forEach(container => {
-    const latex = container.textContent?.trim() || '';
-    const replaced = document.createTextNode(`$${latex}$`);
-    container.replaceWith(replaced);
+    const copyText = container.querySelector('.mjx-copytext');
+    if (copyText) {
+      const textNode = document.createTextNode(copyText.textContent);
+      container.replaceWith(textNode);
+    } else {
+      container.remove(); // 예외 상황: 수식 텍스트가 없으면 제거
+    }
   });
-
+  
   // 이미지 src 절대 경로로 변환
   const imgs = clone.querySelectorAll('#problem_description img');
   imgs.forEach(img => {
@@ -210,7 +214,7 @@ function extractPlainTextWithMathJax(doc) {
       img.setAttribute('src', `https://www.acmicpc.net${src}`);
     }
   });
-  return clone.getElementById('problem_description')?.innerHTML.trim() ?? '';
+  return clone.getElementById('problem_description')?.innerHTML.trim();
 }
 
 async function fetchProblemDescriptionById(problemId) {
@@ -232,11 +236,13 @@ async function fetchSolvedACById(problemId) {
 }
 
 async function getProblemDescriptionById(problemId) {
-  let problem = await getProblemFromStats(problemId);
-  if (isNull(problem)) {
-    problem = await fetchProblemDescriptionById(problemId);
-    updateProblemsFromStats(problem); // not await
-  }
+  // let problem = await getProblemFromStats(problemId);
+  // if (isNull(problem)) {
+  //   problem = await fetchProblemDescriptionById(problemId);
+  //   updateProblemsFromStats(problem); // not await
+  // }
+  const problem = await fetchProblemDescriptionById(problemId);
+  updateProblemsFromStats(problem);
   return problem;
 }
 
